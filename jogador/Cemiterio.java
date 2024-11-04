@@ -5,6 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Cemiterio {
-	private List<ColecaoDeCartas> cartas;
+	private List<Cartas> cartas;
 
 }

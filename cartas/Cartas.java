@@ -12,6 +12,23 @@ public abstract class Cartas {
 		this.descricao = descricao;
 	}
 
+	public abstract void EfeitoDaCarta();
+
+	public String getNome() {
+		return nome;
+	}
+
+
+
+	public int getCustoDeMana() {
+		return custoDeMana;
+	}
+
+
+	public String getDescricao() {
+		return descricao;
+	}
+
 
 	
 	

@@ -9,6 +9,17 @@ public class Feiticos extends Cartas {
 		this.efeito = efeito;
 	}
 	
+	public void EfeitoDaCarta() {
+        System.out.println("Efeito do feitiço: " + efeito);
+
+    }
+
+    @Override
+    public String toString() {
+        return "Feitico [Nome: " + nome + ", Custo de Mana: " + custoDeMana + 
+               ", Descrição: " + descricao + ", Efeito: " + efeito + "]";
+    }
+}
 	
 
-}
+

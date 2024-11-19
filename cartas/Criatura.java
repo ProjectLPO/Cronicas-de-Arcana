@@ -15,6 +15,18 @@ public class Criatura extends Cartas {
 		this.resistencia = resistencia;
 		this.especial = especial;
 	}
+	 @Override
+	    public void EfeitoDaCarta() {
+	        System.out.println("Habilidade especial da criatura: " + especial);
+	        
+	    }
+
+	    @Override
+	    public String toString() {
+	        return "Criatura [Nome: " + nome + ", Custo de Mana: " + custoDeMana +
+	               ", Descrição: " + descricao + ", Poder: " + poder +
+	               ", Resistência: " + resistencia + ", Habilidade Especial: " + especial + "]";
+	    }
 
 
 

@@ -66,7 +66,7 @@ public class Jogo {
    
         jogadorAtual.declararAtaque();
 
-        // bloqueio
+        // Bloqueio
         Jogador oponente = (jogadorAtual == jogador1) ? jogador2 : jogador1;
 
         if (oponente.temCartasNoCampo()) {
@@ -88,12 +88,12 @@ public class Jogo {
         return danoTotal;
     }
 
-    // Encerramento do turno e troca de jogador
+    // Encerra turno e troca
     private void encerrarTurno() {
         jogadorAtual = (jogadorAtual == jogador1) ? jogador2 : jogador1;
     }
 
-    // Verifica a condição de vitória
+    // Condição de vitória
     public boolean verificarCondicoesDeVitoria() {
         if (jogador1.getHp() <= 0) {
             System.out.println("Jogador " + jogador2.getNome() + " venceu!");

@@ -1,7 +1,11 @@
 package jogador;
+
 import java.util.ArrayList;
-import cartas.*;
 import java.util.List;
+import java.util.Scanner;
+import cartas.*;
+import jogo.*;
+
 
 public class Jogador {
     private String nome;
@@ -9,19 +13,44 @@ public class Jogador {
     private int mana;
     private Deck deck;
     private List<Cartas> mao;
+    private CampoDeBatalha campoDeBatalha;
     private Cemiterio cemiterio;
     private static final int MANA_MAXIMA = 10;
+    private Inventario inventario;
 
-    public Jogador(String nome, int hp, int manaInicial, Deck deck) {
+    
+    public Jogador(String nome, int hp, int mana, Deck deck, List<Cartas> mao, CampoDeBatalha campoDeBatalha, Cemiterio cemiterio, Inventario inventario) {
         this.nome = nome;
         this.hp = hp;
-        this.mana = manaInicial;
+        this.mana = 10;
         this.deck = deck;
-        this.mao = new ArrayList<>();
-        this.cemiterio = new Cemiterio();
+        this.mao = mao;
+        this.campoDeBatalha = campoDeBatalha;
+        this.cemiterio = cemiterio;
+        this.inventario = inventario;
+        garantirCriaturaNaMao();
     }
 
-    // Método para comprar uma carta do deck
+    private void garantirCriaturaNaMao() {
+        for (int i = 0; i < 5; i++) {
+            comprarCarta();
+        }
+        boolean temCriatura = mao.stream().anyMatch(carta -> carta instanceof Criatura);
+        if (!temCriatura) {
+            while (!deck.estaVazio()) {
+                Cartas carta = deck.retirarCarta();
+                if (carta instanceof Criatura) {
+                    mao.add(carta);
+                    System.out.println(nome + " recebeu a criatura inicial: " + carta.getNome());
+                    break;
+                }
+            }
+        }
+    }
+
+
+    
+    //Para Cartas
     public void comprarCarta() {
         if (!deck.estaVazio()) {
             Cartas cartaComprada = deck.retirarCarta();
@@ -31,27 +60,187 @@ public class Jogador {
             System.out.println(nome + " não pode comprar mais cartas, o deck está vazio.");
         }
     }
-
-    // Método para jogar uma carta da mão
     public void jogarCarta(Cartas carta) {
-        if (mao.contains(carta) && mana >= carta.getCustoDeMana()) {
-            mao.remove(carta);
-            mana -= carta.getCustoDeMana();
-            System.out.println(nome + " jogou a carta: " + carta);
-            // Aqui você pode adicionar a lógica de mover a carta para o campo de batalha
-        } else {
-            System.out.println(nome + " não tem mana suficiente ou a carta não está na mão.");
+        if (carta instanceof Criatura) {
+        	this.campoDeBatalha.adicionarCriaturaAoCampo((Criatura) carta);
+            System.out.println("Criatura " + carta.getNome() + " foi colocada no campo de batalha.");
+        } else if (carta instanceof Feiticos || carta instanceof Encantamento) {
+            carta.EfeitoDaCarta(); // Aplica o efeito.
+            this.cemiterio.adicionarCarta(carta); 
+            System.out.println("Feitiço ou Encantamento " + carta.getNome() + " foi usado.");
+        }
+        this.mao.remove(carta);
+        if (carta instanceof Feiticos || carta instanceof Encantamento) {
+            carta.EfeitoDaCarta(); // Aplica o efeito.
+            this.cemiterio.adicionarCarta(carta); // Move a carta para o cemitério após o uso.
+            System.out.println(carta.getNome() + " foi usado e enviado ao cemitério.");
+            this.mao.remove(carta); // Remove a carta da mão.
+        }
+
+    }
+
+    //Cartaspara turno inicial
+    public void jogarCartasDoTurno() {
+        Scanner scanner = new Scanner(System.in);
+        while (true) {
+            System.out.println(nome + ", escolha uma carta para jogar da sua mão (ou digite 0 para encerrar):");
+            for (int i = 0; i < mao.size(); i++) {
+                Cartas carta = mao.get(i);
+                System.out.println((i + 1) + ". " + carta.getNome() + " (Custo de Mana: " + carta.getCustoDeMana() + ")");
+            }
+
+            int escolha = Integer.parseInt(scanner.nextLine()) - 1;
+
+            if (escolha == -1) {
+                System.out.println("Encerrando a fase de jogar cartas.");
+                break;
+            }
+
+            if (escolha >= 0 && escolha < mao.size()) {
+                Cartas cartaEscolhida = mao.get(escolha);
+                if (mana >= cartaEscolhida.getCustoDeMana()) {
+                    jogarCarta(cartaEscolhida);
+                    mana -= cartaEscolhida.getCustoDeMana();
+                    System.out.println("Mana restante: " + mana);
+                } else {
+                    System.out.println("Mana insuficiente para jogar " + cartaEscolhida.getNome() + ".");
+                }
+            } else {
+                System.out.println("Escolha inválida.");
+            }
         }
     }
 
-    // Método para regenerar mana a cada turno
+
+
     public void regenerarMana(int turnoAtual) {
-        mana = Math.min(turnoAtual, MANA_MAXIMA);
-        System.out.println(nome + " regenerou mana. Mana atual: " + mana);
+ 
+    	    this.mana =  Math.min(turnoAtual, MANA_MAXIMA); // Regenera a mana para o valor máximo.
+    	    System.out.println("Jogador " + this.nome + " regenerou mana. Mana atual: " + this.mana);
+    	}
+
+    
+
+    public void mostrarInventario() {
+        inventario.mostrarInventario();
     }
 
 
-    // Método para receber dano
+
+    public void adicionarCartaAoDeck(Cartas carta) {
+        if (deck.getCartasNoDeck().size() < 30) {
+            deck.adicionarCarta(carta);
+            inventario.removerCarta(carta);
+            System.out.println("Carta " + carta.getNome() + " adicionada ao deck.");
+        } else {
+            System.out.println("Deck já está completo! Não é possível adicionar mais cartas.");
+        }
+    }
+
+    public void enviarParaCemiterio(Cartas carta) {
+        cemiterio.adicionarCarta(carta);
+        System.out.println(carta + " foi enviada para o cemitério de " + nome);
+    }
+
+ // Ataque
+    public List<Criatura> declararAtaque() {
+        if (campoDeBatalha.isEmpty()) {
+            System.out.println(nome + " não tem criaturas para atacar.");
+            return new ArrayList<>();
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        System.out.println(nome + ", escolha quais criaturas irão atacar (digite os números separados por vírgula):");
+        List<Criatura> criaturasNoCampo = campoDeBatalha.getCriaturasNoCampo();
+        for (int i = 0; i < criaturasNoCampo.size(); i++) {
+            Criatura criatura = criaturasNoCampo.get(i);
+            System.out.println((i + 1) + ". " + criatura.getNome() + " (Poder: " + criatura.getPoder() + ")");
+        }
+
+        String input = scanner.nextLine();
+        String[] escolhas = input.split(",");
+        List<Criatura> criaturasAtacantes = new ArrayList<>();
+
+        for (String escolha : escolhas) {
+            int indice = Integer.parseInt(escolha.trim()) - 1;
+            if (indice >= 0 && indice < criaturasNoCampo.size()) {
+                criaturasAtacantes.add(criaturasNoCampo.get(indice));
+                System.out.println("Criatura selecionada para ataque: " + criaturasNoCampo.get(indice).getNome());
+            }
+        }
+
+        return criaturasAtacantes;
+    }
+
+    // Bloqueio
+    public List<Criatura> escolherBloqueadores(List<Criatura> atacantes) {
+        if (campoDeBatalha.isEmpty()) {
+            System.out.println(nome + " não tem criaturas para bloquear.");
+            return new ArrayList<>();
+        }
+
+        Scanner scanner = new Scanner(System.in);
+        List<Criatura> bloqueadores = new ArrayList<>();
+        List<Criatura> criaturasNoCampo = campoDeBatalha.getCriaturasNoCampo();
+
+        System.out.println(nome + ", escolha suas criaturas para bloquear os ataques:");
+        for (Criatura atacante : atacantes) {
+            System.out.println("Atacante: " + atacante.getNome() + " (Poder: " + atacante.getPoder() + ")");
+            for (int i = 0; i < criaturasNoCampo.size(); i++) {
+                Criatura bloqueador = criaturasNoCampo.get(i);
+                System.out.println((i + 1) + ". " + bloqueador.getNome() + " (Poder: " + bloqueador.getPoder() + ", Resistência: " + bloqueador.getResistencia() + ")");
+            }
+
+            System.out.println("Digite o número do bloqueador ou 0 para não bloquear:");
+            int escolha = Integer.parseInt(scanner.nextLine().trim()) - 1;
+
+            if (escolha >= 0 && escolha < criaturasNoCampo.size()) {
+                bloqueadores.add(criaturasNoCampo.get(escolha));
+                System.out.println("Bloqueador selecionado: " + criaturasNoCampo.get(escolha).getNome());
+            } else {
+                System.out.println("Nenhuma criatura foi selecionada para bloquear.");
+            }
+        }
+
+        return bloqueadores;
+    }
+
+    // Combate
+    public void processarCombate(List<Criatura> atacantes, List<Criatura> bloqueadores) {
+        for (int i = 0; i < atacantes.size(); i++) {
+            Criatura atacante = atacantes.get(i);
+
+            if (i < bloqueadores.size()) {
+                Criatura bloqueador = bloqueadores.get(i);
+                System.out.println(atacante.getNome() + " é bloqueado por " + bloqueador.getNome());
+
+                // Dano simultâneo
+                atacante.receberDano(bloqueador.getPoder());
+                bloqueador.receberDano(atacante.getPoder());
+
+                // Para o cemiterio
+                if (atacante.getResistencia() <= 0) {
+                    System.out.println(atacante.getNome() + " foi destruído e enviado ao cemitério.");
+                    campoDeBatalha.removerCriaturaDoCampo(atacante);
+                    cemiterio.adicionarCarta(atacante);
+                }
+                if (bloqueador.getResistencia() <= 0) {
+                    System.out.println(bloqueador.getNome() + " foi destruído e enviado ao cemitério.");
+                    campoDeBatalha.removerCriaturaDoCampo(bloqueador);
+                    cemiterio.adicionarCarta(bloqueador);
+                }
+            } else {
+                // Dano direto ao oponente
+                System.out.println(atacante.getNome() + " ataca diretamente o jogador oponente.");
+                receberDano(atacante.getPoder());
+            }
+        }
+       
+
+    }
+    
+
+    // Receber dano do jogador
     public void receberDano(int dano) {
         hp -= dano;
         if (hp <= 0) {
@@ -61,69 +250,62 @@ public class Jogador {
             System.out.println(nome + " recebeu " + dano + " de dano. HP atual: " + hp);
         }
     }
-
-    // Método para adicionar uma carta ao cemitério
-    public void enviarParaCemiterio(Cartas carta) {
-        cemiterio.adicionarCarta(carta);
-        System.out.println(carta + " foi enviada para o cemitério de " + nome);
-    }
-
-    // Getters e Setters
+    //Getters
     public int getHp() {
         return hp;
     }
 
-    public int getMana() {
-        return mana;
+    public void setHp(int hp) {
+        this.hp = hp;
+    }
+
+    public Deck getDeck() {
+        return deck;
+    }
+
+    public void setDeck(Deck deck) {
+        this.deck = deck;
     }
 
     public List<Cartas> getMao() {
-        return new ArrayList<>(mao);
+        return mao;
+    }
+
+    public void setMao(List<Cartas> mao) {
+        this.mao = mao;
     }
 
     public Cemiterio getCemiterio() {
         return cemiterio;
     }
-    
-    public Deck getDeck() {
-    	return	deck;																																																												
+
+    public void setCemiterio(Cemiterio cemiterio) {
+        this.cemiterio = cemiterio;
     }
 
-    @Override
-    public String toString() {
-        return "Jogador " + nome + " [HP=" + hp + ", Mana=" + mana + ", Cartas na mão=" + mao.size() + "]";
+    public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setCampoDeBatalha(CampoDeBatalha campoDeBatalha) {
+        this.campoDeBatalha = campoDeBatalha;
     }
 
 
-  
-
-// Método para declarar ataque
-public void declararAtaque() {
-    if (campoDeBatalha.isEmpty()) {
-        System.out.println(nome + " não tem criaturas para atacar.");
-        return;
+    public String getNome() {
+        return nome;
     }
 
-    for (Criatura criatura : campoDeBatalha) {
-        System.out.println(nome + " ataca com " + criatura.getNome() + " (Poder: " + criatura.getPoder() + ")");
-        // Implementar lógica para o oponente bloquear ou receber o dano direto
+    public boolean temCartasNoCampo() {
+        return !campoDeBatalha.isEmpty();
+    }
+
+    public int getMana() {
+        return mana;
+    }
+    public CampoDeBatalha getCampoDeBatalha() {
+        return campoDeBatalha;
     }
 }
 
 
-// Getter e setter para atributos necessários
-public String getNome() {
-    return nome;
-}
-
-
-
-public void adicionarCartaNaMao(Cartas carta) {
-    mao.add(carta);
-}
-
-
-public boolean temCartasNoCampo() {
-    return !campoDeBatalha.isEmpty();
-}
-}

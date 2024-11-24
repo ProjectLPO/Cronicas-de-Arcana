@@ -28,10 +28,4 @@ public abstract class Cartas {
 	public String getDescricao() {
 		return descricao;
 	}
-
-
-	
-	
-	
-
 }

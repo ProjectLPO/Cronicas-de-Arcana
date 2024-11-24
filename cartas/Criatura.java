@@ -20,6 +20,11 @@ public class Criatura extends Cartas {
 	        System.out.println("Habilidade especial da criatura: " + especial);
 	        
 	    }
+	 public void receberDano(int dano) {
+	        resistencia = Math.max(0, resistencia - dano);
+
+	        System.out.println(getNome() + " recebeu " + dano + " de dano. Resistência atual: " + resistencia);
+	    }
 
 	    @Override
 	    public String toString() {
@@ -27,6 +32,24 @@ public class Criatura extends Cartas {
 	               ", Descrição: " + descricao + ", Poder: " + poder +
 	               ", Resistência: " + resistencia + ", Habilidade Especial: " + especial + "]";
 	    }
+		public int getPoder() {
+			return poder;
+		}
+		public void setPoder(int poder) {
+			this.poder = poder;
+		}
+		public int getResistencia() {
+			return resistencia;
+		}
+		public void setResistencia(int resistencia) {
+			this.resistencia = resistencia;
+		}
+		public String getEspecial() {
+			return especial;
+		}
+		public void setEspecial(String especial) {
+			this.especial = especial;
+		}
 
 
 

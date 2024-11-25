@@ -20,11 +20,7 @@ public class Criatura extends Cartas {
 	        System.out.println("Habilidade especial da criatura: " + especial);
 	        
 	    }
-	 public void receberDano(int dano) {
-	        resistencia = Math.max(0, resistencia - dano);
 
-	        System.out.println(getNome() + " recebeu " + dano + " de dano. Resistência atual: " + resistencia);
-	    }
 
 	    @Override
 	    public String toString() {
@@ -50,6 +46,61 @@ public class Criatura extends Cartas {
 		public void setEspecial(String especial) {
 			this.especial = especial;
 		}
+		 public void aumentarPoder(int quantidade) {
+		        if (quantidade > 0) {
+		            this.poder += quantidade;
+		            System.out.println(this.getNome() + " teve o poder aumentado em " + quantidade + ". Poder atual: " + this.poder);
+		        } else {
+		            System.out.println("A quantidade para aumentar o poder deve ser positiva.");
+		        }
+		    }
+
+		    /**
+		     * Diminui o poder da criatura.
+		     * @param quantidade Quantidade a ser reduzida do poder.
+		     */
+		    public void diminuirPoder(int quantidade) {
+		        if (quantidade > 0) {
+		            this.poder -= quantidade;
+		            if (this.poder < 0) this.poder = 0; // Garantir que o poder não fique negativo
+		            System.out.println(this.getNome() + " teve o poder reduzido em " + quantidade + ". Poder atual: " + this.poder);
+		        } else {
+		            System.out.println("A quantidade para reduzir o poder deve ser positiva.");
+		        }
+		    }
+
+		    /**
+		     * Aumenta a resistência da criatura.
+		     * @param quantidade Quantidade a ser adicionada à resistência.
+		     */
+		    public void aumentarResistencia(int quantidade) {
+		        if (quantidade > 0) {
+		            this.resistencia += quantidade;
+		            System.out.println(this.getNome() + " teve a resistência aumentada em " + quantidade + ". Resistência atual: " + this.resistencia);
+		        } else {
+		            System.out.println("A quantidade para aumentar a resistência deve ser positiva.");
+		        }
+		    }
+
+		    /**
+		     * Aplica dano ou cura à resistência da criatura.
+		     * @param dano Quantidade de dano a ser aplicada. Use valores negativos para curar.
+		     */
+		    public void receberDano(int dano) {
+		        if (dano >= 0) {
+		            this.resistencia -= dano;
+		            System.out.println(this.getNome() + " recebeu " + dano + " de dano. Resistência atual: " + this.resistencia);
+		        } else {
+		            int cura = -dano;
+		            this.resistencia += cura;
+		            System.out.println(this.getNome() + " foi curada em " + cura + " pontos. Resistência atual: " + this.resistencia);
+		        }
+
+		        if (this.resistencia <= 0) {
+		            System.out.println(this.getNome() + " foi derrotada.");
+		        }
+		    }
+		}
 
 
 
@@ -57,4 +108,4 @@ public class Criatura extends Cartas {
 
 
 	
-}
+

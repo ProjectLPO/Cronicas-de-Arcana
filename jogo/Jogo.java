@@ -21,10 +21,7 @@ public class Jogo {
     private void setupInicial() {
         jogador1.getDeck().embaralhar();
         jogador2.getDeck().embaralhar();
-        for (int i = 0; i < 5; i++) {
-            jogador1.comprarCarta();
-            jogador2.comprarCarta();
-        }
+
         Random random = new Random();
         jogadorAtual = random.nextBoolean() ? jogador1 : jogador2;
     }
@@ -63,7 +60,7 @@ public class Jogo {
         Jogador oponente = (jogadorAtual == jogador1) ? jogador2 : jogador1;
         List<Criatura> bloqueadores = oponente.escolherBloqueadores(atacantes);
 
-        jogadorAtual.processarCombate(atacantes, bloqueadores); 
+        jogadorAtual.processarCombate(atacantes, bloqueadores, oponente); 
     }
 
     private void trocarTurno() {

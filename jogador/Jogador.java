@@ -22,8 +22,9 @@ public class Jogador {
     public Jogador(String nome, int hp, int mana, Deck deck, List<Cartas> mao, CampoDeBatalha campoDeBatalha, Cemiterio cemiterio, Inventario inventario) {
         this.nome = nome;
         this.hp = hp;
-        this.mana = 10;
+        this.mana = mana;
         this.deck = deck;
+        this.deck.embaralhar();
         this.mao = mao;
         this.campoDeBatalha = campoDeBatalha;
         this.cemiterio = cemiterio;
@@ -32,14 +33,24 @@ public class Jogador {
     }
 
     private void garantirCriaturaNaMao() {
-        for (int i = 0; i < 5; i++) {
+        // Comprar cartas até ter 5 cartas na mão
+        while (mao.size() < 5 && !deck.estaVazio()) {
             comprarCarta();
         }
+
+        // Verificar se há uma criatura na mão
         boolean temCriatura = mao.stream().anyMatch(carta -> carta instanceof Criatura);
+
+        // Se não houver criatura, substituir uma carta da mão por uma criatura do deck
         if (!temCriatura) {
             while (!deck.estaVazio()) {
                 Cartas carta = deck.retirarCarta();
                 if (carta instanceof Criatura) {
+                    // Remover a primeira carta da mão para abrir espaço
+                    if (mao.size() == 5) {
+                        mao.remove(0);
+                    }
+                    // Adicionar a criatura à mão
                     mao.add(carta);
                     System.out.println(nome + " recebeu a criatura inicial: " + carta.getNome());
                     break;
@@ -48,8 +59,7 @@ public class Jogador {
         }
     }
 
-
-    
+         
     //Para Cartas
     public void comprarCarta() {
         if (!deck.estaVazio()) {
@@ -206,7 +216,7 @@ public class Jogador {
     }
 
     // Combate
-    public void processarCombate(List<Criatura> atacantes, List<Criatura> bloqueadores) {
+    public void processarCombate(List<Criatura> atacantes, List<Criatura> bloqueadores, Jogador oponente) {
         for (int i = 0; i < atacantes.size(); i++) {
             Criatura atacante = atacantes.get(i);
 
@@ -232,7 +242,7 @@ public class Jogador {
             } else {
                 // Dano direto ao oponente
                 System.out.println(atacante.getNome() + " ataca diretamente o jogador oponente.");
-                receberDano(atacante.getPoder());
+                oponente.receberDano(atacante.getPoder());
             }
         }
        

@@ -17,6 +17,15 @@ public class Jogo {
         this.turnoAtual = 1; 
         setupInicial();
     }
+    public void configurarJogadores() {
+    	System.out.println(jogador1.getNome());
+    	System.out.println(jogador2.getNome());
+            System.out.println("\nConfiguração para o jogador: " + jogadorAtual.getNome());
+            jogadorAtual.montarDeck(); 
+        }
+    
+
+
 
     private void setupInicial() {
         jogador1.getDeck().embaralhar();
@@ -41,9 +50,10 @@ public class Jogo {
         System.out.println(jogadorAtual.getNome() + " inicia seu turno.");
         jogadorAtual.comprarCarta();
         jogadorAtual.regenerarMana(turnoAtual);
+        Jogador oponente = (jogadorAtual == jogador1) ? jogador2 : jogador1;
 
         // Fase de jogar cartas
-        jogadorAtual.jogarCartasDoTurno();
+        jogadorAtual.jogarCartasDoTurno(oponente);
 
         // Fase de ataque
         jogadorAtual.declararAtaque();
@@ -68,7 +78,7 @@ public class Jogo {
     }
 
     private boolean verificarCondicoesDeVitoria() {
-        // Condição de derrota por HP
+        // Derrota por hp
         if (jogador1.getHp() <= 0 || jogador2.getHp() <= 0) {
             System.out.println("O jogo terminou!");
             if (jogador1.getHp() <= 0) {
@@ -79,7 +89,7 @@ public class Jogo {
             return true;
         }
 
-        // Condição de empate para deck vazio 
+        // Empate para deck vazio
         boolean ambosDecksVazios = jogador1.getDeck().estaVazio() && jogador2.getDeck().estaVazio();
         boolean ambosCamposVazios = jogador1.getCampoDeBatalha().isEmpty() && jogador2.getCampoDeBatalha().isEmpty();
 

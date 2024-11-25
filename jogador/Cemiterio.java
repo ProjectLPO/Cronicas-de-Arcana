@@ -20,9 +20,18 @@ public class Cemiterio {
     public List<Cartas> listarCartas() {
         return new ArrayList<>(cartas);
     }
-
+    public void removerCarta(Cartas carta) {
+        if (cartas.remove(carta)) {
+            System.out.println("Carta removida do cemitério: " + carta.getNome());
+        } else {
+            System.out.println("Carta não encontrada no cemitério.");
+        }
+    }
+    public List<Cartas> getCartas() {
+        return new ArrayList<>(cartas);
+    }
     
-    public boolean estaVazio() {
+    public boolean isEmpty() {
         return cartas.isEmpty();
     }
 

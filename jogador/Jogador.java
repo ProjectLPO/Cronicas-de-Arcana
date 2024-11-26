@@ -6,6 +6,7 @@ import java.util.Scanner;
 import cartas.*;
 import exceptions.DeckCompletoException;
 import jogo.*;
+import scan.ScannerGlobal;
 
 
 public class Jogador {
@@ -18,6 +19,9 @@ public class Jogador {
     private Cemiterio cemiterio;
     private static final int MANA_MAXIMA = 10;
     private Inventario inventario;
+    
+
+   
 
     
     public Jogador(String nome, int hp, int mana, Deck deck, List<Cartas> mao, CampoDeBatalha campoDeBatalha, Cemiterio cemiterio, Inventario inventario) {
@@ -100,7 +104,7 @@ public class Jogador {
 
     //Cartas para turno inicial
     	public void jogarCartasDoTurno(Jogador oponente) {
-    	    Scanner scanner = new Scanner(System.in);
+    	    Scanner scanner = ScannerGlobal.scanner;
     	    while (true) {
     	        System.out.println(nome + ", escolha uma carta para jogar da sua mão (ou digite 0 para encerrar):");
     	        for (int i = 0; i < mao.size(); i++) {
@@ -136,7 +140,7 @@ public class Jogador {
     	    }
     	}
     	public void montarDeck() {
-    	    Scanner scanner = new Scanner(System.in);
+    	    Scanner scanner = ScannerGlobal.scanner;
     	    System.out.println("Inventário, " + nome + "! Monte seu deck (mínimo 30 cartas):");
     	    List<Cartas> cartasDisponiveis = inventario.getCartas();
 
@@ -154,7 +158,7 @@ public class Jogador {
     	                Cartas cartaEscolhida = cartasDisponiveis.get(escolha);
 
     	                try {
-    	                    adicionarCartaAoDeck(cartaEscolhida); // Pode lançar DeckCompletoException
+    	                    adicionarCartaAoDeck(cartaEscolhida); 
     	                    cartasDisponiveis.remove(escolha);
     	                } catch (DeckCompletoException e) {
     	                    System.out.println("Erro: " + e.getMessage());
@@ -212,7 +216,7 @@ public class Jogador {
             return new ArrayList<>();
         }
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ScannerGlobal.scanner;
         System.out.println(nome + ", escolha quais criaturas irão atacar (digite os números separados por vírgula):");
         List<Criatura> criaturasNoCampo = campoDeBatalha.getCriaturasNoCampo();
         for (int i = 0; i < criaturasNoCampo.size(); i++) {
@@ -242,7 +246,7 @@ public class Jogador {
             return new ArrayList<>();
         }
 
-        Scanner scanner = new Scanner(System.in);
+        Scanner scanner = ScannerGlobal.scanner;
         List<Criatura> bloqueadores = new ArrayList<>();
         List<Criatura> criaturasNoCampo = campoDeBatalha.getCriaturasNoCampo();
 
@@ -295,151 +299,10 @@ public class Jogador {
 
     //Habilita os feitiços
     public void processarFeitico(Feiticos feitico, Jogador oponente) {
-        switch (feitico.getNome().trim()) {
-            case "Limpar encanto":
-                System.out.println("O campo de encantamentos será limpo para ambos os jogadores.");
-                this.getCampoDeBatalha().removerEncantamentos();
-                oponente.getCampoDeBatalha().removerEncantamentos();
-                break;
-            case "Derretimento":
-                if (!oponente.getCampoDeBatalha().isEmpty()) {
-                    Cartas cartaRemovida = oponente.getCampoDeBatalha().removerCartaAleatoria();
-                    System.out.println("Carta removida do campo do oponente: " + cartaRemovida.getNome());
-                } else {
-                    System.out.println("O campo do oponente está vazio. Nada foi removido.");
-                }
-                break;
-            case "Sopro final":
-                this.hp += 2;
-                System.out.println("Jogador " + this.nome + " recuperou 2 pontos de HP. HP atual: " + this.hp);
-                break;
-            case "último folêgo":
-                if (!campoDeBatalha.getCriaturasNoCampo().isEmpty()) {
-                    Criatura criaturaCurada = campoDeBatalha.getCriaturasNoCampo().get(0);
-                    criaturaCurada.receberDano(-1); // Curar 1 ponto de resistência
-                    System.out.println("Criatura curada: " + criaturaCurada.getNome());
-                }
-                break;
-            case "Gato da Sorte":
-                for (int i = 0; i < 2; i++) {
-                    this.comprarCarta();
-                }
-                System.out.println(this.nome + " comprou 2 cartas.");
-                break;
-            case "Gato do Azar":
-                if (!oponente.getMao().isEmpty()) {
-                    Cartas cartaRemovida = oponente.getMao().remove(0); // Remove a primeira carta da mão
-                    System.out.println("Carta removida da mão do oponente: " + cartaRemovida.getNome());
-                    oponente.getCemiterio().adicionarCarta(cartaRemovida);
-                }
-            case "Gato Neutro":
-                if (!mao.isEmpty()) {
-                    Scanner scanner = new Scanner(System.in);
-                    System.out.println("Escolha uma carta para enviar ao cemitério:");
-                    for (int i = 0; i < mao.size(); i++) {
-                        System.out.println((i + 1) + ". " + mao.get(i).getNome());
-                    }
-                    int escolha = Integer.parseInt(scanner.nextLine()) - 1;
-                    if (escolha >= 0 && escolha < mao.size()) {
-                        Cartas descartada = mao.remove(escolha);
-                        enviarCartaParaCemiterio(descartada);
-                        System.out.println("Carta descartada: " + descartada.getNome());
-                        comprarCarta();
-                    } else {
-                        System.out.println("Escolha inválida.");
-                    }
-                } else {
-                    System.out.println("Mão vazia, nenhuma carta foi descartada.");
-                }
-                break;
-
-            case "Gato da Morte":
-                System.out.println("Causando 3 de dano ao HP do oponente.");
-                oponente.receberDano(3);
-                break;
-
-            case "A Morte Cobra":
-                System.out.println("Causando 3 de dano ao HP de ambos os jogadores.");
-                receberDano(3);
-                oponente.receberDano(3);
-                break;
-
-            case "Pé na Cova":
-                System.out.println("Removendo criaturas com resistência menor que 3 do campo do oponente.");
-                List<Criatura> criaturasRemovidas = new ArrayList<>();
-                for (Criatura criatura : oponente.getCampoDeBatalha().getCriaturasNoCampo()) {
-                    if (criatura.getResistencia() < 3) {
-                        criaturasRemovidas.add(criatura);
-                    }
-                }
-                for (Criatura criatura : criaturasRemovidas) {
-                    oponente.getCampoDeBatalha().removerCriaturaDoCampo(criatura);
-                    oponente.enviarCartaParaCemiterio(criatura);
-                    System.out.println("Criatura removida: " + criatura.getNome());
-                }
-                break;
-
-            case "Cura para todos":
-                System.out.println("Curando 1 ponto de resistência para todas as criaturas no seu campo.");
-                for (Criatura criatura : campoDeBatalha.getCriaturasNoCampo()) {
-                    criatura.aumentarResistencia(1);
-                }
-                break;
-
-            case "Eu de novo":
-                System.out.println("Pulando o turno de combate do oponente.");
-                oponente.pularTurnoDeCombate();
-                break;
-
-            case "Que Retorne":
-                if (!cemiterio.isEmpty()) {
-                    System.out.println("Escolha uma carta para retornar do cemitério:");
-                    List<Cartas> cartasNoCemiterio = cemiterio.getCartas();
-                    for (int i = 0; i < cartasNoCemiterio.size(); i++) {
-                        System.out.println((i + 1) + ". " + cartasNoCemiterio.get(i).getNome());
-                    }
-                    Scanner scanner = new Scanner(System.in);
-                    int escolha = Integer.parseInt(scanner.nextLine()) - 1;
-                    if (escolha >= 0 && escolha < cartasNoCemiterio.size()) {
-                        Cartas retornada = cartasNoCemiterio.get(escolha);
-                        mao.add(retornada);
-                        cemiterio.removerCarta(retornada);
-                        System.out.println("Carta retornada à mão: " + retornada.getNome());
-                    } else {
-                        System.out.println("Escolha inválida.");
-                    }
-                } else {
-                    System.out.println("O cemitério está vazio. Nenhuma carta foi retornada.");
-                }
-                break;
-
-            case "Que Abale":
-                System.out.println("Escolha uma criatura do oponente para causar dano equivalente ao seu poder:");
-                List<Criatura> criaturasOponentes = oponente.getCampoDeBatalha().getCriaturasNoCampo();
-                if (!criaturasOponentes.isEmpty()) {
-                    for (int i = 0; i < criaturasOponentes.size(); i++) {
-                        Criatura criatura = criaturasOponentes.get(i);
-                        System.out.println((i + 1) + ". " + criatura.getNome() + " (Poder: " + criatura.getPoder() + ")");
-                    }
-                    Scanner scanner = new Scanner(System.in);
-                    int escolha = Integer.parseInt(scanner.nextLine()) - 1;
-                    if (escolha >= 0 && escolha < criaturasOponentes.size()) {
-                        Criatura alvo = criaturasOponentes.get(escolha);
-                        alvo.receberDano(alvo.getPoder());
-                        System.out.println("Criatura alvo " + alvo.getNome() + " recebeu dano de " + alvo.getPoder() + ".");
-                    } else {
-                        System.out.println("Escolha inválida.");
-                    }
-                } else {
-                    System.out.println("O campo do oponente está vazio.");
-                }
-                break;
-
-            default:
-                System.out.println("Feitiço não reconhecido.");
-                break;
-        }
+        feitico.ativarEfeito(this, oponente);
+        enviarCartaParaCemiterio(feitico);
     }
+
     
 
 
@@ -452,20 +315,26 @@ public class Jogador {
                 Criatura bloqueador = bloqueadores.get(i);
                 System.out.println(atacante.getNome() + " é bloqueado por " + bloqueador.getNome());
 
-                // Dano simultâneo
+                // dano simultâneo
                 atacante.receberDano(bloqueador.getPoder());
                 bloqueador.receberDano(atacante.getPoder());
 
-                // Para o cemiterio
-                if (atacante.getResistencia() <= 0) {
-                    System.out.println(atacante.getNome() + " foi destruído e enviado ao cemitério.");
-                    campoDeBatalha.removerCriaturaDoCampo(atacante);
-                    cemiterio.adicionarCarta(atacante);
-                }
+                // Remover bloqueador derrotado
                 if (bloqueador.getResistencia() <= 0) {
-                    System.out.println(bloqueador.getNome() + " foi destruído e enviado ao cemitério.");
                     campoDeBatalha.removerCriaturaDoCampo(bloqueador);
                     cemiterio.adicionarCarta(bloqueador);
+                    System.out.println(bloqueador.getNome() + " foi destruído e enviado ao cemitério.");
+                    bloqueadores.remove(i);
+                }
+
+                // Remover atacante derrotado
+                if (atacante.getResistencia() <= 0) {
+                    campoDeBatalha.removerCriaturaDoCampo(atacante);
+                    cemiterio.adicionarCarta(atacante);
+                    System.out.println(atacante.getNome() + " foi destruído e enviado ao cemitério.");
+                    atacantes.remove(i);
+                    i--; // Ajustar o índice após remoção da carta
+                    continue; 
                 }
             } else {
                 // Dano direto ao oponente
@@ -473,9 +342,22 @@ public class Jogador {
                 oponente.receberDano(atacante.getPoder());
             }
         }
-       
-
     }
+
+
+    public void verificarConsistencia() {
+        List<Criatura> criaturasNoCampo = new ArrayList<>(campoDeBatalha.getCriaturasNoCampo());
+        for (Criatura criatura : criaturasNoCampo) {
+            if (criatura.getResistencia() <= 0) {
+                campoDeBatalha.removerCriaturaDoCampo(criatura);
+                cemiterio.adicionarCarta(criatura);
+            }
+        }
+    }
+
+
+
+    
     
 
     // Receber dano do jogador
@@ -487,6 +369,8 @@ public class Jogador {
         } else {
             System.out.println(nome + " recebeu " + dano + " de dano. HP atual: " + hp);
         }
+
+
     }
     //Getters
     public int getHp() {
@@ -545,5 +429,3 @@ public class Jogador {
         return campoDeBatalha;
     }
 }
-
-

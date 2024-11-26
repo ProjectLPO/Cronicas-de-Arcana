@@ -47,21 +47,27 @@ public class Jogo {
     }
 
 
-    private void executarTurno() {
-        System.out.println(jogadorAtual.getNome() + " inicia seu turno.");
-        jogadorAtual.comprarCarta();
-        jogadorAtual.regenerarMana(turnoAtual);
-        Jogador oponente = (jogadorAtual == jogador1) ? jogador2 : jogador1;
+ 
+    	private void executarTurno() {
+    	    System.out.println(jogadorAtual.getNome() + " inicia seu turno.");
 
-        // Fase de jogar cartas
-        jogadorAtual.jogarCartasDoTurno(oponente);
+    	   
+    	    jogadorAtual.verificarConsistencia();
 
-        // Fase de ataque
-        jogadorAtual.declararAtaque();
-        executarCombate();
+    	    jogadorAtual.comprarCarta();
+    	    jogadorAtual.regenerarMana(turnoAtual);
+    	    Jogador oponente = (jogadorAtual == jogador1) ? jogador2 : jogador1;
 
-        trocarTurno();
-    }
+    	    // Fase de jogar cartas
+    	    jogadorAtual.jogarCartasDoTurno(oponente);
+
+    	    // Fase de ataque
+    	    jogadorAtual.declararAtaque();
+    	    executarCombate();
+
+    	    trocarTurno();
+    	}
+
 
 
     private void executarCombate() {

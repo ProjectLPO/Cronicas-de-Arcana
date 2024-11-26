@@ -32,8 +32,13 @@ public class CampoDeBatalha {
     }
 
     public void removerCriaturaDoCampo(Criatura criatura) {
-        this.criaturasNoCampo.remove(criatura);
+        if (criaturasNoCampo.remove(criatura)) {
+            System.out.println("Criatura " + criatura.getNome() + " foi removida do campo de batalha.");
+        } else {
+            System.out.println("Erro: " + criatura.getNome() + " não foi encontrada no campo de batalha.");
+        }
     }
+
     public void adicionarEncantamentoAoCampo(Encantamento encantamento) {
         this.encantamentosNoCampo.add(encantamento);
     }

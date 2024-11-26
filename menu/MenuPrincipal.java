@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.ArrayList;
 import jogo.*;
+import scan.ScannerGlobal;
 
 
 
@@ -14,7 +15,7 @@ import jogo.*;
 	    private List<Inventario> inventarios;
 
 	    public MenuPrincipal() {
-	        scanner = new Scanner(System.in);
+	        scanner = ScannerGlobal.scanner;
 	        inventarios = new ArrayList<>();
 	    }
 
@@ -36,6 +37,7 @@ import jogo.*;
 	    private int lerOpcao() {
 	        System.out.print("Escolha uma opção: ");
 	        return scanner.nextInt();
+            
 	    }
 
 	    private void executarOpcao(int opcao) {

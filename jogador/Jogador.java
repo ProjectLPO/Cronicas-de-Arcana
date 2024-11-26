@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 import cartas.*;
+import exceptions.DeckCompletoException;
 import jogo.*;
 
 
@@ -136,7 +137,7 @@ public class Jogador {
     	}
     	public void montarDeck() {
     	    Scanner scanner = new Scanner(System.in);
-    	    System.out.println("Invetário, " + nome + "! Monte seu deck (mínimo 30 cartas):");
+    	    System.out.println("Inventário, " + nome + "! Monte seu deck (mínimo 30 cartas):");
     	    List<Cartas> cartasDisponiveis = inventario.getCartas();
 
     	    while (deck.getCartasNoDeck().size() < 30) {
@@ -146,16 +147,24 @@ public class Jogador {
     	        }
 
     	        System.out.println("\nEscolha uma carta pelo número para adicionar ao deck:");
-    	        int escolha;
     	        try {
-    	            escolha = Integer.parseInt(scanner.nextLine()) - 1;
+    	            int escolha = Integer.parseInt(scanner.nextLine()) - 1;
+
     	            if (escolha >= 0 && escolha < cartasDisponiveis.size()) {
     	                Cartas cartaEscolhida = cartasDisponiveis.get(escolha);
-    	                adicionarCartaAoDeck(cartaEscolhida);
-    	                cartasDisponiveis.remove(escolha);
+
+    	                try {
+    	                    adicionarCartaAoDeck(cartaEscolhida); // Pode lançar DeckCompletoException
+    	                    cartasDisponiveis.remove(escolha);
+    	                } catch (DeckCompletoException e) {
+    	                    System.out.println("Erro: " + e.getMessage());
+    	                    break; 
+    	                }
+
     	            } else {
     	                System.out.println("Escolha inválida. Tente novamente.");
     	            }
+
     	        } catch (NumberFormatException e) {
     	            System.out.println("Entrada inválida. Por favor, insira um número.");
     	        }
@@ -167,6 +176,8 @@ public class Jogador {
 
 
 
+
+
     public void regenerarMana(int turnoAtual) {
  
     	    this.mana =  Math.min(turnoAtual, MANA_MAXIMA);
@@ -175,15 +186,19 @@ public class Jogador {
 
 
 
-    public void adicionarCartaAoDeck(Cartas carta) {
+    public void adicionarCartaAoDeck(Cartas carta) throws DeckCompletoException {
         if (deck.getCartasNoDeck().size() < 30) {
             deck.adicionarCarta(carta);
             inventario.removerCarta(carta);
             System.out.println("Carta " + carta.getNome() + " adicionada ao deck.");
-        } else {
-            System.out.println("Deck já está completo! Não é possível adicionar mais cartas.");
+        }  else {  
+            throw new DeckCompletoException("Deck já está completo! Não é possível adicionar mais cartas.");
         }
-    }
+        }
+    
+            
+    
+
 
     public void enviarParaCemiterio(Cartas carta) {
         cemiterio.adicionarCarta(carta);

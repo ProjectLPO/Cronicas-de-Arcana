@@ -5,6 +5,7 @@ import java.util.List;
 import cartas.Criatura;
 import jogador.Jogador;
 
+
 public class Jogo {
     private Jogador jogador1;
     private Jogador jogador2;
@@ -17,7 +18,7 @@ public class Jogo {
         this.turnoAtual = 1; 
         setupInicial();
     }
-    public void configurarJogadores() {
+    public void configurarJogadores()  {
     	System.out.println(jogador1.getNome());
     	System.out.println(jogador2.getNome());
             System.out.println("\nConfiguração para o jogador: " + jogadorAtual.getNome());

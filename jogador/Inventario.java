@@ -4,6 +4,7 @@ import cartas.Cartas;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
+import scan.ScannerGlobal;
 
 
 
@@ -35,7 +36,7 @@ public class Inventario {
         while (deck.tamanho() < 30) {
             System.out.print("Escolha uma carta (restam " + (30 - deck.tamanho()) + "): ");
             int escolha = scanner.nextInt() - 1;
-
+            ScannerGlobal.scanner.nextLine(); 
             if (escolha >= 0 && escolha < colecao.size()) {
                 Cartas cartaSelecionada = colecao.get(escolha);
                 deck.adicionarCarta(cartaSelecionada);
@@ -65,4 +66,6 @@ public class Inventario {
         }
     }
 }
+
+
 

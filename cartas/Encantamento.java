@@ -11,7 +11,7 @@ public class Encantamento extends Cartas{
 	  @Override
 	    public void efeitoDaCarta() {
 	        System.out.println("Efeito contínuo do encantamento: " + efeitoCont);
-	        // Aqui você pode adicionar a lógica de como o efeito contínuo afeta o jogo.
+	      
 	    }
 
 	    @Override

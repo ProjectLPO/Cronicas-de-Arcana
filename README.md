@@ -23,6 +23,7 @@ Fim de turno, troca-se os jogadores e o jogador 2 entra em campo.
 
 A cada turno, os jogadores ganham 1 de mana, até  max de 10.
 E compram uma carta nova.
+O jogo termina quando um dois jogadores tem seu hp reduzido a 0.
 
 
 

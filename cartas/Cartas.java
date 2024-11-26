@@ -12,7 +12,7 @@ public abstract class Cartas {
 		this.descricao = descricao;
 	}
 
-	public abstract void EfeitoDaCarta();
+	public abstract void efeitoDaCarta();
 
 	public String getNome() {
 		return nome;

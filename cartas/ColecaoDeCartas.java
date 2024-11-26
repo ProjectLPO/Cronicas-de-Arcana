@@ -2,26 +2,41 @@ package cartas;
 import java.util.ArrayList;
 import java.util.List;
 
+import efeitoFeitico.AMorteCobra;
+import efeitoFeitico.CuraParaTodos;
+import efeitoFeitico.Derretimento;
+import efeitoFeitico.EuDeNovo;
+import efeitoFeitico.GatoDaMorte;
+import efeitoFeitico.GatoDaSorte;
+import efeitoFeitico.GatoDoAzar;
+import efeitoFeitico.GatoNeutro;
+import efeitoFeitico.LimparEncanto;
+import efeitoFeitico.PeNaCova;
+import efeitoFeitico.QueAbale;
+import efeitoFeitico.QueRetorne;
+import efeitoFeitico.SoproFinal;
+import efeitoFeitico.UltimoFolego;
+
 public class ColecaoDeCartas {
     
     public static List<Cartas> obterCartas() {
         List<Cartas> cartas = new ArrayList<>();
 
         // Feitiços
-        cartas.add(new Feiticos("Limpar encanto", 4, "Elimina cartas de encantamento no campo para ambos os jogadores", "Limpa o campo de encamentos"));
-        cartas.add(new Feiticos("Derretimento", 2, "Remove uma carta aleatória do campo inimigo","Remove uma carta"));
-        cartas.add(new Feiticos("Sopro final", 5, "Restaura 2 ponto de hp para o jogador", "Restaura 2 pontos de hp"));
-        cartas.add(new Feiticos("último folêgo", 2, "Restaura 1 ponto de resistência de uma criatura em campo", ""));
-        cartas.add(new Feiticos("Gato da Sorte", 4, "Saque 2 cartas", ""));
-        cartas.add(new Feiticos("Gato do Azar", 3, "Remove 1 carta da mão inimiga", ""));
-        cartas.add(new Feiticos("Gato Neutro", 2, "Envia uma carta da sua mão ao cemitério e saca uma carta do deck", ""));
-        cartas.add(new Feiticos("Gato da Morte", 8, "Causa 3 de dano diretamente ao hp do oponente", ""));
-        cartas.add(new Feiticos("A Morte Cobra ", 9, "Causa 3 de dano diretamente ao hp do oponente e jogador", ""));
-        cartas.add(new Feiticos("Pé na Cova", 5, "Retira todas as Criaturas do oponente no campo que estejam com a resistência menor que 3", ""));
-        cartas.add(new Feiticos("Cura para todos", 4, "Cura 1 ponto de resistência para todas as criaturas em seu campo", ""));
-        cartas.add(new Feiticos("Eu de novo", 2, "Pula o turno de combate do oponente", ""));
-        cartas.add(new Feiticos("Que Retorne", 3, "Retorna uma carta do Cemitério", ""));
-        cartas.add(new Feiticos("Que Abale", 5, "Causa dano a uma criatura no valor de seu poder", ""));
+        cartas.add(new Feiticos("Limpar Encanto", 4, "Elimina cartas de encantamento no campo para ambos os jogadores", new LimparEncanto()));
+        cartas.add(new Feiticos("Derretimento", 2, "Remove uma carta aleatória do campo inimigo", new Derretimento()));
+        cartas.add(new Feiticos("Sopro Final", 5, "Restaura 2 ponto de hp para o jogador", new SoproFinal()));
+        cartas.add(new Feiticos("Último Folêgo", 2, "Restaura 1 ponto de resistência de uma criatura em campo", new UltimoFolego()));
+        cartas.add(new Feiticos("Gato da Sorte", 4, "Saque 2 cartas", new GatoDaSorte()));
+        cartas.add(new Feiticos("Gato do Azar", 3, "Remove 1 carta da mão inimiga", new GatoDoAzar()));
+        cartas.add(new Feiticos("Gato Neutro", 2, "Envia uma carta da sua mão ao cemitério e saca uma carta do deck", new GatoNeutro()));
+        cartas.add(new Feiticos("Gato da Morte", 8, "Causa 3 de dano diretamente ao hp do oponente", new GatoDaMorte()));
+        cartas.add(new Feiticos("A Morte Cobra ", 9, "Causa 3 de dano diretamente ao hp do oponente e jogador",new AMorteCobra() ));
+        cartas.add(new Feiticos("Pé na Cova", 5, "Retira todas as Criaturas do oponente no campo que estejam com a resistência menor que 3", new PeNaCova()));
+        cartas.add(new Feiticos("Cura para todos", 4, "Cura 1 ponto de resistência para todas as criaturas em seu campo", new CuraParaTodos()));
+        cartas.add(new Feiticos("Eu de novo", 2, "Pula o turno de combate do oponente", new EuDeNovo()));
+        cartas.add(new Feiticos("Que Retorne", 3, "Retorna uma carta do Cemitério", new QueRetorne()));
+        cartas.add(new Feiticos("Que Abale", 5, "Causa dano a uma criatura no valor de seu poder", new QueAbale()));
         
         // Criaturas
         cartas.add(new Criatura("Lorellei", 5, "Sereia vingativa com dentes afiados", 7, 6, "Causa dano extra de 1 ponto ao morder"));

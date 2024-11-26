@@ -16,7 +16,7 @@ public class Criatura extends Cartas {
 		this.especial = especial;
 	}
 	 @Override
-	    public void EfeitoDaCarta() {
+	    public void efeitoDaCarta() {
 	        System.out.println("Habilidade especial da criatura: " + especial);
 	        
 	    }
@@ -55,10 +55,7 @@ public class Criatura extends Cartas {
 		        }
 		    }
 
-		    /**
-		     * Diminui o poder da criatura.
-		     * @param quantidade Quantidade a ser reduzida do poder.
-		     */
+		    //Diminui o poder da criatura.
 		    public void diminuirPoder(int quantidade) {
 		        if (quantidade > 0) {
 		            this.poder -= quantidade;
@@ -69,10 +66,8 @@ public class Criatura extends Cartas {
 		        }
 		    }
 
-		    /**
-		     * Aumenta a resistência da criatura.
-		     * @param quantidade Quantidade a ser adicionada à resistência.
-		     */
+		    //Aumenta a resistência da criatura.
+		   
 		    public void aumentarResistencia(int quantidade) {
 		        if (quantidade > 0) {
 		            this.resistencia += quantidade;
@@ -82,25 +77,24 @@ public class Criatura extends Cartas {
 		        }
 		    }
 
-		    /**
-		     * Aplica dano ou cura à resistência da criatura.
-		     * @param dano Quantidade de dano a ser aplicada. Use valores negativos para curar.
-		     */
+		    //Aplica dano ou cura à resistência da criatura.
+		    
 		    public void receberDano(int dano) {
-		        if (dano >= 0) {
+		        if (dano > 0) {
 		            this.resistencia -= dano;
-		            System.out.println(this.getNome() + " recebeu " + dano + " de dano. Resistência atual: " + this.resistencia);
-		        } else {
+		            if (this.resistencia <= 0) {
+		                this.resistencia = 0; // Garante que não fique negativa
+		                System.out.println(this.getNome() + " foi derrotada.");
+		            } else {
+		                System.out.println(this.getNome() + " recebeu " + dano + " de dano. Resistência atual: " + this.resistencia);
+		            }
+		        } else if (dano < 0) {
 		            int cura = -dano;
 		            this.resistencia += cura;
 		            System.out.println(this.getNome() + " foi curada em " + cura + " pontos. Resistência atual: " + this.resistencia);
 		        }
-
-		        if (this.resistencia <= 0) {
-		            System.out.println(this.getNome() + " foi derrotada.");
-		        }
 		    }
-		}
+}
 
 
 
